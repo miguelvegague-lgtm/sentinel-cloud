@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sentinel Cloud - Wizard Configuration</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+  <link rel="stylesheet" href="css/custom.css">
+</head>
+<body>
+
+  <header class="header-status py-2 px-3 d-flex justify-content-between align-items-center sticky-top">
+    <div class="d-flex align-items-center gap-2">
+      <i class="bi bi-shield-lock-fill text-info fs-3"></i>
+      <span class="fw-bold fs-5 text-white">Sentinel Cloud</span>
+      <span class="badge bg-primary ms-2">SOC Autonomous Defense</span>
+    </div>
+  </header>
+
+  <div class="container-fluid">
+    <div class="row">
+      <nav class="col-md-3 col-lg-2 sidebar p-3 d-none d-md-block">
+        <ul class="nav nav-pills flex-column">
+          <li class="nav-item"><a href="wizard.html" class="nav-link active"><i class="bi bi-magic me-2"></i> Wizard Config</a></li>
+          <li class="nav-item"><a href="index.html" class="nav-link"><i class="bi bi-speedometer2 me-2"></i> Dashboard</a></li>
+          <li class="nav-item"><a href="alertas.html" class="nav-link"><i class="bi bi-exclamation-triangle me-2"></i> Alertas y Severidad</a></li>
+          <li class="nav-item"><a href="soar.html" class="nav-link"><i class="bi bi-cpu me-2"></i> Control SOAR</a></li>
+          <li class="nav-item"><a href="logs.html" class="nav-link"><i class="bi bi-database me-2"></i> Cloud Data Lake</a></li>
+        </ul>
+      </nav>
+
+      <main class="col-md-9 col-lg-10 ms-sm-auto px-md-4 py-4">
+        <h1 class="h3 text-white mb-4"><i class="bi bi-sliders me-2 text-info"></i> Asistente de Configuración de Entorno Nube</h1>
+
+        <div class="row g-4">
+          <div class="col-lg-8">
+            <div class="card card-soc p-4">
+              <h5 class="text-info mb-3">1. Selección de Infraestructura y Normativa</h5>
+              <form>
+                <div class="mb-3">
+                  <label class="form-label text-light">Proveedor Cloud Principal</label>
+                  <select class="form-select bg-dark text-light border-secondary">
+                    <option selected>AWS Cloud - Región Bogotá / South America (sa-east-1)</option>
+                    <option>Microsoft Azure - Colombia Central Node</option>
+                    <option>Google Cloud Platform - South America East</option>
+                  </select>
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label text-light">Marco de Cumplimiento Regulatorio</label>
+                  <select class="form-select bg-dark text-light border-secondary">
+                    <option selected>Superintendencia Financiera de Colombia (SFC Circulares 007/052)</option>
+                    <option>PCI-DSS v4.0 (Estándar de Seguridad de Datos para Tarjetas)</option>
+                    <option>ISO/IEC 27001:2022 Management System</option>
+                  </select>
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label text-light">Servidores Críticos a Monitorear (Lista separada por comas)</label>
+                  <input type="text" class="form-input form-control bg-dark text-light border-secondary" value="SRV-CORE-BANKING-01, GW-VPN-BOGOTA, APP-TRANSAC-API, DATA-LAKE-01">
+                </div>
+
+                <div class="mb-3 form-check form-switch">
+                  <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" checked>
+                  <label class="form-check-label text-light" for="flexSwitchCheckChecked">Activar Motor de Respuesta Automática SOAR (Respuesta en < 0.1s)</label>
+                </div>
+
+                <button type="button" class="btn btn-info mt-3" onclick="alert('Configuración de arquitectura guardada correctamente.')"><i class="bi bi-save me-1"></i> Desplegar Agentes en Nube</button>
+              </form>
+            </div>
+          </div>
+
+          <div class="col-lg-4">
+            <div class="card card-soc p-4">
+              <h5 class="text-info mb-3"><i class="bi bi-check-circle me-2"></i> Módulos Habilitados</h5>
+              <ul class="list-unstyled text-muted">
+                <li class="mb-2"><i class="bi bi-check2 text-success me-2"></i> Sensores eBPF Kernel AWS</li>
+                <li class="mb-2"><i class="bi bi-check2 text-success me-2"></i> Firewall Automático BGP Flowspec</li>
+                <li class="mb-2"><i class="bi bi-check2 text-success me-2"></i> Análisis Heurístico con IA</li>
+                <li class="mb-2"><i class="bi bi-check2 text-success me-2"></i> Logs Inmutables SHA-256</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sentinel Cloud - Enterprise SOC Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+  <link rel="stylesheet" href="css/custom.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+  <header class="header-status py-2 px-3 d-flex justify-content-between align-items-center sticky-top">
+    <div class="d-flex align-items-center gap-2">
+      <i class="bi bi-shield-lock-fill text-info fs-3"></i>
+      <span class="fw-bold fs-5 text-white">Sentinel Cloud</span>
+      <span class="badge bg-primary ms-2">SOC Autonomous Defense v4.5</span>
+    </div>
+    <div class="d-flex align-items-center gap-3">
+      <div class="d-flex align-items-center gap-2 bg-dark px-3 py-1 rounded-pill border border-secondary">
+        <span class="pulse-green" id="statusPulse"></span>
+        <small class="fw-bold text-success" id="globalStatusText">ESTADO GLOBAL: SISTEMA SEGURO (MONITOREO IA)</small>
+      </div>
+      <a href="wizard.html" class="btn btn-sm btn-outline-info"><i class="bi bi-sliders me-1"></i> Configuración</a>
+    </div>
+  </header>
+
+  <div class="container-fluid">
+    <div class="row">
+      <nav class="col-md-3 col-lg-2 sidebar p-3 d-none d-md-block">
+        <ul class="nav nav-pills flex-column">
+          <li class="nav-item"><a href="wizard.html" class="nav-link"><i class="bi bi-magic me-2"></i> Wizard Config</a></li>
+          <li class="nav-item"><a href="index.html" class="nav-link active"><i class="bi bi-speedometer2 me-2"></i> Dashboard</a></li>
+          <li class="nav-item"><a href="alertas.html" class="nav-link"><i class="bi bi-exclamation-triangle me-2"></i> Alertas y Severidad</a></li>
+          <li class="nav-item"><a href="soar.html" class="nav-link"><i class="bi bi-cpu me-2"></i> Control SOAR</a></li>
+          <li class="nav-item"><a href="logs.html" class="nav-link"><i class="bi bi-database me-2"></i> Cloud Data Lake</a></li>
+        </ul>
+      </nav>
+
+      <main class="col-md-9 col-lg-10 ms-sm-auto px-md-4 py-4">
+        
+        <div class="d-flex justify-content-between flex-wrap align-items-center pb-2 mb-3 border-bottom border-secondary">
+          <div>
+            <h1 class="h3 text-white m-0">Centro de Operaciones de Seguridad (SOC en Nube)</h1>
+            <small class="text-muted">Sector Financiero • Infraestructura Multicloud AWS/Azure Bogotá</small>
+          </div>
+          <div class="btn-group">
+            <button class="btn btn-sm btn-danger" onclick="forzarAtaqueInmediato()"><i class="bi bi-lightning-fill me-1"></i> Simular Ataque Crítico</button>
+            <button class="btn btn-sm btn-outline-light" id="btnToggleSim" onclick="toggleSimulacion()"><i class="bi bi-pause-fill me-1"></i> Pausar Tráfico</button>
+          </div>
+        </div>
+
+        <!-- Metrics Row -->
+        <div class="row g-3 mb-4">
+          <div class="col-12 col-sm-6 col-xl-3">
+            <div class="card card-soc p-3">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <small class="text-muted d-block fw-bold">Eventos / Segundo</small>
+                  <span class="fs-3 fw-bold text-info" id="kpiEventos">2,410,890</span>
+                </div>
+                <i class="bi bi-activity text-info fs-1"></i>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-sm-6 col-xl-3">
+            <div class="card card-soc p-3">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <small class="text-muted d-block fw-bold">Amenazas Mitigadas</small>
+                  <span class="fs-3 fw-bold text-success" id="kpiAmenazas">1,284</span>
+                </div>
+                <i class="bi bi-shield-check text-success fs-1"></i>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-sm-6 col-xl-3">
+            <div class="card card-soc p-3">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <small class="text-muted d-block fw-bold">Tiempo Autorespuesta</small>
+                  <span class="fs-3 fw-bold text-warning">&lt; 0.08s</span>
+                </div>
+                <i class="bi bi-lightning text-warning fs-1"></i>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-sm-6 col-xl-3">
+            <div class="card card-soc p-3">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <small class="text-muted d-block fw-bold">Sensores Activos</small>
+                  <span class="fs-3 fw-bold text-primary">24/24</span>
+                </div>
+                <i class="bi bi-diagram-3 text-primary fs-1"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Chart and Feed Row -->
+        <div class="row g-4 mb-4">
+          <div class="col-lg-8">
+            <div class="card card-soc h-100">
+              <div class="card-header card-soc-header d-flex justify-content-between align-items-center">
+                <span><i class="bi bi-graph-up-arrow me-2 text-info"></i> Telemetría de Tráfico y Mitigación de Amenazas (Tiempo Real)</span>
+                <span class="badge bg-dark text-info border border-info">LIVE GRAPH</span>
+              </div>
+              <div class="card-body">
+                <canvas id="trafficChart" height="110"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-4">
+            <div class="card card-soc h-100">
+              <div class="card-header card-soc-header d-flex justify-content-between align-items-center">
+                <span><i class="bi bi-bell-fill me-2 text-warning"></i> Incidentes Recientes</span>
+                <span class="badge bg-danger" id="badgeTotalInc">4 Recientes</span>
+              </div>
+              <div class="card-body p-0">
+                <ul class="list-group list-group-flush bg-transparent" id="listaIncidentes">
+                  <li class="list-group-item bg-transparent text-light border-secondary">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                      <span class="badge bg-success">AUTO-MITIGADO</span>
+                      <small class="text-muted">10:14:02</small>
+                    </div>
+                    <div class="fw-bold">Intento Inyección SQL en Gateway</div>
+                    <small class="text-muted">IP 185.220.101.52 bloqueada WAF</small>
+                  </li>
+                  <li class="list-group-item bg-transparent text-light border-secondary">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                      <span class="badge bg-success">AUTO-MITIGADO</span>
+                      <small class="text-muted">10:12:40</small>
+                    </div>
+                    <div class="fw-bold">DDoS SYN Flood Volumétrico</div>
+                    <small class="text-muted">Regla BGP Flowspec Activada</small>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Terminal Section -->
+        <div class="row">
+          <div class="col-12">
+            <div class="card card-soc">
+              <div class="card-header card-soc-header d-flex justify-content-between align-items-center">
+                <span><i class="bi bi-terminal-fill me-2 text-success"></i> Consola de Eventos y Ejecución SOAR</span>
+                <button class="btn btn-sm btn-outline-secondary" onclick="limpiarTerminal()"><i class="bi bi-trash"></i> Limpiar</button>
+              </div>
+              <div class="card-body">
+                <div class="soc-terminal" id="terminalFeed">
+                  [SYSTEM-INIT] Iniciando subsistema Sentinel Cloud Engine v4.5...<br>
+                  [TELEMETRY] Conexión establecida con AWS US-East / Nodo Bogotá.<br>
+                  [SOAR Engine] Playbooks activos y monitoreando firmas de red...<br>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    let simulacionActiva = true;
+    let totalEventos = 2410890;
+    let totalAmenazas = 1284;
+
+    // Configuración del Gráfico Dinámico con Chart.js
+    const ctx = document.getElementById('trafficChart').getContext('2d');
+    const chartData = {
+      labels: ['10:10', '10:11', '10:12', '10:13', '10:14', '10:15'],
+      datasets: [
+        {
+          label: 'Tráfico Limpio (Req/s)',
+          data: [1200, 1350, 1250, 1400, 1300, 1450],
+          borderColor: '#0dcaf0',
+          backgroundColor: 'rgba(13, 202, 240, 0.1)',
+          fill: true,
+          tension: 0.4
+        },
+        {
+          label: 'Ataques Bloqueados',
+          data: [12, 45, 8, 95, 20, 110],
+          borderColor: '#dc3545',
+          backgroundColor: 'rgba(220, 53, 69, 0.2)',
+          fill: true,
+          tension: 0.4
+        }
+      ]
+    };
+
+    const trafficChart = new Chart(ctx, {
+      type: 'line',
+      data: chartData,
+      options: {
+        responsive: true,
+        plugins: { legend: { labels: { color: '#ffffff' } } },
+        scales: {
+          x: { ticks: { color: '#8b949e' }, grid: { color: 'rgba(255,255,255,0.05)' } },
+          y: { ticks: { color: '#8b949e' }, grid: { color: 'rgba(255,255,255,0.05)' } }
+        }
+      }
+    });
+
+    const vectoresAtaque = [
+      { nombre: "Ataque Ransomware LockBit", severidad: "CRÍTICO", playbook: "Playbook #1: Isolation Host & Revoke Keys" },
+      { nombre: "Exfiltración de Datos mediante DNS Tunneling", severidad: "ALTA", playbook: "Playbook #4: Block DNS & Sinkhole" },
+      { nombre: "Fuerza Bruta en API Servidor Central", severidad: "MEDIA", playbook: "Playbook #2: Rate Limit & IP Ban" },
+      { nombre: "Inyección SQL en Portal Transaccional", severidad: "CRÍTICO", playbook: "Playbook #3: WAF Rule Auto-Deploy" }
+    ];
+
+    const ipsOrigen = ["185.220.101.5", "45.142.214.8", "103.152.220.10", "190.157.32.12"];
+
+    function hora() {
+      return new Date().toTimeString().split(' ')[0];
+    }
+
+    function simularEventos() {
+      if(!simulacionActiva) return;
+      
+      totalEventos += Math.floor(Math.random() * 80) + 20;
+      document.getElementById('kpiEventos').innerText = totalEventos.toLocaleString();
+
+      const term = document.getElementById('terminalFeed');
+      if(Math.random() > 0.6) {
+        term.innerHTML += `[${hora()}] [INFO] Escaneo heurístico correcto en Nodos de AWS Bogotá.<br>`;
+        term.scrollTop = term.scrollHeight;
+      }
+    }
+
+    function simularAtaqueAutomatico() {
+      if(!simulacionActiva) return;
+
+      const atk = vectoresAtaque[Math.floor(Math.random() * vectoresAtaque.length)];
+      const ip = ipsOrigen[Math.floor(Math.random() * ipsOrigen.length)];
+      
+      const term = document.getElementById('terminalFeed');
+      const pulse = document.getElementById('statusPulse');
+      const statusTxt = document.getElementById('globalStatusText');
+
+      // 1. Alerta de Detección
+      pulse.className = "pulse-red";
+      statusTxt.innerText = `AMENAZA DETECTADA: ${atk.nombre.toUpperCase()}`;
+      statusTxt.className = "fw-bold text-danger";
+
+      term.innerHTML += `<br><span class="text-danger">[AMENAZA DETECTADA] ${atk.nombre} desde IP ${ip} (Severidad: ${atk.severidad})</span><br>`;
+
+      // 2. Respuesta Automatizada SOAR
+      setTimeout(() => {
+        totalAmenazas++;
+        document.getElementById('kpiAmenazas').innerText = totalAmenazas.toLocaleString();
+
+        term.innerHTML += `<span class="text-warning">[SOAR EXEC] Aplicando respuesta automatizada: ${atk.playbook}...</span><br>`;
+        term.innerHTML += `<span class="text-success">[SOAR OK] Amenaza neutralizada con éxito en 0.04s. Protocolo completado.</span><br><br>`;
+        
+        pulse.className = "pulse-green";
+        statusTxt.innerText = 'ESTADO GLOBAL: SISTEMA SEGURO (MONITOREO IA)';
+        statusTxt.className = "fw-bold text-success";
+
+        // Actualizar lista de incidentes
+        const lista = document.getElementById('listaIncidentes');
+        const item = `
+          <li class="list-group-item bg-transparent text-light border-secondary">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+              <span class="badge bg-success">AUTO-MITIGADO</span>
+              <small class="text-muted">${hora()}</small>
+            </div>
+            <div class="fw-bold">${atk.nombre}</div>
+            <small class="text-muted">IP ${ip} mitigada automáticamente</small>
+          </li>`;
+        lista.innerHTML = item + lista.innerHTML;
+
+        // Actualizar gráfico en vivo
+        trafficChart.data.labels.shift();
+        trafficChart.data.labels.push(hora().substring(0, 5));
+        trafficChart.data.datasets[1].data.shift();
+        trafficChart.data.datasets[1].data.push(Math.floor(Math.random() * 80) + 40);
+        trafficChart.update();
+
+        term.scrollTop = term.scrollHeight;
+      }, 1000);
+    }
+
+    function forzarAtaqueInmediato() {
+      simularAtaqueAutomatico();
+    }
+
+    function toggleSimulacion() {
+      simulacionActiva = !simulacionActiva;
+      const btn = document.getElementById('btnToggleSim');
+      if(simulacionActiva) {
+        btn.innerHTML = `<i class="bi bi-pause-fill me-1"></i> Pausar Tráfico`;
+      } else {
+        btn.innerHTML = `<i class="bi bi-play-fill me-1"></i> Reanudar Tráfico`;
+      }
+    }
+
+    function limpiarTerminal() {
+      document.getElementById('terminalFeed').innerHTML = `[${hora()}] Consola reiniciada por el usuario.<br>`;
+    }
+
+    setInterval(simularEventos, 2000);
+    setInterval(simularAtaqueAutomatico, 8000);
+  </script>
+</body>
+</html>
